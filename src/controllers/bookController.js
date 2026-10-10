@@ -25,11 +25,7 @@ let books = [
   // 1. Kitap Ekleme (POST)
   const createBook = (req, res) => {
     const { title, author, category, publishedYear } = req.body;
-  
-    if (!title || !author) {
-      return res.status(400).json({ error: "Başlık ve yazar alanları zorunludur." });
-    }
-  
+
     const newBook = {
       id: nextId++,
       title,
