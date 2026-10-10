@@ -154,10 +154,14 @@ let books = [
     res.status(200).json({ message: "Kitap başarıyla silindi.", book: deletedBook[0] });
   };
   
+  // Raporlar güncel listeyi bu fonksiyonla okur
+  const getBooks = () => books;
+
   module.exports = {
     createBook,
     getAllBooks,
     getBookById,
     updateBook,
-    deleteBook
+    deleteBook,
+    getBooks
   };
