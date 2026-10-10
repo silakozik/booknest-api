@@ -1,44 +1,84 @@
 # BookNest API
 
-Küçük bir kitaplığın raflarını ve ödünç kayıtlarını takip eden REST API. Amaç, senaryo ve endpoint listesi `docs/proje-tanitim.md` dosyasındadır.
+Mahalle kitaplığının raflarını ve ödünç kayıtlarını tutan bir REST API. Node.js Backend Programlama bitirme projesi olarak yazdım. Arayüz yok; istek ve cevap JSON'dur. Amaç ve senaryo `docs/proje-tanitim.md` dosyasında.
 
-## Gereksinim
+## Teknolojiler
 
-Bilgisayarda [Node.js](https://nodejs.org/) 18 veya üzeri kurulu olmalıdır.
+- Node.js 18 veya üzeri
+- Express.js
+- nodemon (geliştirmede dosya değişince sunucu yenilenir)
 
-## Kurulum
+Kayıtlar bellekte durur. Sunucu kapanınca Suç ve Ceza ile 1984 dışındaki kitaplar silinir.
 
-Repoyu indir:
+## Dizin
+
+```
+booknest-api/
+├── docs/
+│   ├── proje-tanitim.md
+│   └── postman/
+├── src/
+│   ├── controllers/
+│   ├── middlewares/
+│   ├── routes/
+│   └── app.js
+├── index.js
+└── package.json
+```
+
+## Ayağa kaldırma
 
 ```bash
 git clone https://github.com/silakozik/booknest-api.git
 cd booknest-api
-```
-
-Bağımlılıkları yükle:
-
-```bash
 npm install
-```
-
-## Çalıştırma
-
-Geliştirme modunda başlat. Dosya değişince sunucu kendiliğinden yenilenir:
-
-```bash
 npm run dev
 ```
 
-API şu adreste çalışır: [http://localhost:3000](http://localhost:3000)
+Tek seferlik çalıştırma için `npm start`. Konsolda `BookNest API http://localhost:3000 üzerinde çalışıyor.` yazınca hazırdır.
 
-Yeniden başlatma gerekmeyen tek seferlik çalıştırma için:
+## Adresler
 
-```bash
-npm start
+| Metot | Adres | İş |
+|---|---|---|
+| POST | /books | Kitap ekler (`201`) |
+| GET | /books | Kitapları listeler |
+| GET | /books/:id | Tek kitabı getirir. Yoksa `404` |
+| PUT | /books/:id | Gönderilen alanları günceller. Yoksa `404` |
+| DELETE | /books/:id | Kitabı siler. Yoksa `404` |
+| GET | /reports/available | Raftaki kitap sayısı |
+| GET | /reports/borrowed | Ödünçteki kitap sayısı |
+| GET | /reports/summary | Toplam, rafta, ödünçte ve kategori dağılımı |
+
+## Listeyi daraltmak
+
+`GET /books` şu parametreleri birlikte de alabilir:
+
+- `status` — `available` veya `borrowed`
+- `category` — kategori adı
+- `search` — başlık veya yazar
+- `page` ve `limit` — varsayılan `1` ve `10`
+- `sort` — `createdAt` veya `-createdAt`
+
+Örnek: `/books?status=available&search=dostoyevski`. Cevapta `data`, `page`, `limit`, `total` ve `totalPages` vardır.
+
+## Kitap eklerken gövde
+
+```json
+{
+  "title": "Simyacı",
+  "author": "Paulo Coelho",
+  "category": "Roman",
+  "publishedYear": 1988
+}
 ```
 
-Konsolda `BookNest API http://localhost:3000 üzerinde çalışıyor.` yazısını gördükten sonra istek atabilirsin. Örnek:
+`title` ve `author` zorunlu. `category` boşsa `Genel` olur. Geçersiz gövdede API `400` döner. Yeni kitap rafta açılır.
 
-```bash
-curl http://localhost:3000/books
-```
+## Postman
+
+Ekran görüntüleri `docs/postman` klasöründe.
+
+## İletişim
+
+[GitHub](https://github.com/silakozik)
