@@ -45,8 +45,69 @@ let books = [
   };
   
   // 2. Tüm Kitapları Listeleme (GET)
+  // Örnek: /books?status=available&category=Distopya&search=orwell&page=1&limit=10&sort=createdAt
   const getAllBooks = (req, res) => {
-    res.status(200).json(books);
+    const { status, category, search, sort } = req.query;
+    // Asıl listeyi bozmamak için kopya üzerinde çalışılır
+    let result = [...books];
+
+    // Duruma göre filtre (available veya borrowed)
+    if (status) {
+      result = result.filter((book) => book.status === status);
+    }
+
+    // Kategoriye göre filtre; büyük/küçük harf fark etmez
+    if (category) {
+      const categoryQuery = category.toLowerCase();
+      result = result.filter(
+        (book) => book.category.toLowerCase() === categoryQuery
+      );
+    }
+
+    // Başlık veya yazar içinde arama
+    if (search) {
+      const q = search.toLowerCase();
+      result = result.filter(
+        (book) =>
+          book.title.toLowerCase().includes(q) ||
+          book.author.toLowerCase().includes(q)
+      );
+    }
+
+    // createdAt: eskiden yeniye, -createdAt: yeniden eskiye
+    if (sort === "createdAt") {
+      result.sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt));
+    } else if (sort === "-createdAt") {
+      result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    } else if (sort) {
+      return res.status(400).json({
+        error: "sort yalnızca createdAt veya -createdAt olabilir."
+      });
+    }
+
+    // page ve limit yoksa 1. sayfa, sayfa başı 10 kayıt
+    const page = req.query.page !== undefined ? parseInt(req.query.page, 10) : 1;
+    const limit = req.query.limit !== undefined ? parseInt(req.query.limit, 10) : 10;
+
+    if (!Number.isInteger(page) || page < 1) {
+      return res.status(400).json({ error: "page 1 veya daha büyük bir sayı olmalı." });
+    }
+
+    if (!Number.isInteger(limit) || limit < 1) {
+      return res.status(400).json({ error: "limit 1 veya daha büyük bir sayı olmalı." });
+    }
+
+    // Filtrelenmiş listenin istenen dilimini döndür
+    const total = result.length;
+    const start = (page - 1) * limit;
+
+    res.status(200).json({
+      data: result.slice(start, start + limit),
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit)
+    });
   };
   
   // 3. Tekil Kitap Getirme (GET :id)
