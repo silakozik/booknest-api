@@ -20,6 +20,19 @@ Kütüphane açıldığında iki örnek kitap hazırdır: Suç ve Ceza rafta, 19
 - Liste sorgusunda duruma ve kategoriye göre süzme, başlık veya yazarda arama, sayfalama ve tarihe göre sıralama
 - Raftaki kitap sayısı, ödünçteki kitap sayısı ve kategori dağılımını veren raporlar
 
+## Adresler
+
+| Metot | Adres | İş |
+|---|---|---|
+| POST | /books | Kitap ekler (`201`) |
+| GET | /books | Kitapları listeler |
+| GET | /books/:id | Tek kitabı getirir. Yoksa `404` |
+| PUT | /books/:id | Gönderilen alanları günceller. Yoksa `404` |
+| DELETE | /books/:id | Kitabı siler. Yoksa `404` |
+| GET | /reports/available | Raftaki kitap sayısı |
+| GET | /reports/borrowed | Ödünçteki kitap sayısı |
+| GET | /reports/summary | Toplam, rafta, ödünçte ve kategori dağılımı |
+
 ## Kullanılan Teknolojiler
 
 - Node.js
